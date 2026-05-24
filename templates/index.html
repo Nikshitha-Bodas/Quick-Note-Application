@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Quick Note App</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Quick Note </h1>
+
+    <textarea
+        id="noteInput"
+        placeholder="Write your note here..."
+    ></textarea>
+
+    <button onclick="saveNote()">
+        Save Note
+    </button>
+
+    <h2>Saved Notes</h2>
+
+    <div id="notes">
+
+        {% for note in notes %}
+
+        <div class="note">
+
+            <p id="text-{{note[0]}}">
+                {{ note[1] }}
+            </p>
+
+            <button onclick="editNote({{note[0]}})">
+                Edit
+            </button>
+
+            <button onclick="deleteNote({{note[0]}})">
+                Delete
+            </button>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+<script>
+
+function saveNote(){
+
+    const noteText =
+        document.getElementById("noteInput").value;
+
+    fetch('/add', {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+            note: noteText
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+        location.reload();
+    });
+
+}
+
+
+
+function deleteNote(id){
+
+    fetch('/delete/' + id, {
+
+        method: 'POST'
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+        location.reload();
+    });
+
+}
+
+
+
+function editNote(id){
+
+    const currentText =
+        document.getElementById("text-" + id).innerText;
+
+    const updatedText =
+        prompt("Edit your note:", currentText);
+
+    if(updatedText){
+
+        fetch('/edit/' + id, {
+
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify({
+                note: updatedText
+            })
+
+        })
+
+        .then(response => response.json())
+
+        .then(data => {
+            location.reload();
+        });
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
