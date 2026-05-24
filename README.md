@@ -20,4 +20,4 @@ Python
 Flask
 SQLite
 
-Live Demo: http://localhost:5000
+
